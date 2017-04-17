@@ -140,9 +140,21 @@ func (p *Producer) flush(records []*k.PutRecordsRequestEntry, reason string) {
 	}
 
 	failed := *out.FailedRecordCount
+
 	if failed == 0 {
 		p.Backoff.Reset()
 		return
+	}
+
+	for _, r := range out.Records {
+		if r.ErrorCode == nil {
+			continue
+		}
+
+		p.Logger.WithFields(log.Fields{
+			"code":    *r.ErrorCode,
+			"message": *r.ErrorMessage,
+		}).Error("push record")
 	}
 
 	p.backoff(int(failed))
