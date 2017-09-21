@@ -36,12 +36,21 @@ type Config struct {
 
 	// Client is the Kinesis API implementation.
 	Client kinesisiface.KinesisAPI
+
+	// Separator is a string we insert at the end of all records
+	Separator []byte
 }
 
 // defaults for configuration.
 func (c *Config) defaults() {
 	if c.Client == nil {
-		c.Client = k.New(session.New(aws.NewConfig()))
+		s, err := session.NewSession(aws.NewConfig())
+
+		if err != nil {
+			panic("can't initialize AWS client")
+		}
+
+		c.Client = k.New(s)
 	}
 
 	if c.Logger == nil {
