@@ -19,6 +19,9 @@ type Config struct {
 	// StreamName is the Kinesis stream.
 	StreamName string
 
+	// Region where is stream is
+	StreamRegion string
+
 	// FlushInterval is a regular interval for flushing the buffer. Defaults to 1s.
 	FlushInterval time.Duration
 
@@ -44,7 +47,13 @@ type Config struct {
 // defaults for configuration.
 func (c *Config) defaults() {
 	if c.Client == nil {
-		s, err := session.NewSession(aws.NewConfig())
+		awsConfig := aws.NewConfig()
+
+		if c.StreamRegion != "" {
+			awsConfig = awsConfig.WithRegion(c.StreamRegion)
+		}
+
+		s, err := session.NewSession(awsConfig)
 
 		if err != nil {
 			panic("can't initialize AWS client")
