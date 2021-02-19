@@ -19,6 +19,9 @@ type Config struct {
 	// StreamName is the Kinesis stream.
 	StreamName string
 
+	// Override the API URL (for development)
+	EndpointURL string
+
 	// Region where is stream is
 	StreamRegion string
 
@@ -48,6 +51,10 @@ type Config struct {
 func (c *Config) defaults() {
 	if c.Client == nil {
 		awsConfig := aws.NewConfig()
+
+		if c.EndpointURL != "" {
+			awsConfig = awsConfig.WithEndpoint(c.EndpointURL)
+		}
 
 		if c.StreamRegion != "" {
 			awsConfig = awsConfig.WithRegion(c.StreamRegion)
