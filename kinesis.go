@@ -122,10 +122,6 @@ func (p *Producer) loop() {
 
 // flush records and retry failures if necessary.
 func (p *Producer) flush(records []*k.PutRecordsRequestEntry, reason string) {
-	p.Logger.WithFields(log.Fields{
-		"records": len(records),
-		"reason":  reason,
-	}).Info("flush")
 
 	out, err := p.Client.PutRecords(&k.PutRecordsInput{
 		StreamName: &p.StreamName,
